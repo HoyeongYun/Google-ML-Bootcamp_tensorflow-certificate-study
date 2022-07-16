@@ -48,42 +48,35 @@ model.fit(training_images, training_labels, epochs=5)
 # evaluate model
 model.evaluate(test_images, test_labels)   # model.evaluate : [0.34194064140319824, 0.8758000135421753]
 
-## Exercise 1
 '''
-predict 에 X를 주면 예측값 (여기서는 softmax를 통과한 값) 이 나옴
+Exercise 몇개 skip
 '''
-classifications = model.predict(test_images) # Returns -> the probability that this item is each of the 10 classes
-print(f'test_images.shape : {test_images.shape}')   # (10000, 28, 28)
-print(classifications[0])   # test image 1000장 중 첫번째 이미지의 class 예측값
-# print(classifications.shape) # (10000, 10)
-print(test_labels[0]) # 9
 
-## Exercise 2
-'''
-hidden layer 의 activation을 1024로 늘렸다.
-by adding more Neurons we have to do more calculations, slowing down the process, but in this case they have a good impact -- we do get more accurate. That doesn't mean it's always a case of 'more is better', you can hit the law of diminishing returns very quickly!
-'''
-mnist = tf.keras.datasets.mnist
+print(training_images.shape)
+default_batch_size = 32
+print(divmod(training_images.shape[0], default_batch_size)) # 이래서 epoch 당 1875번 반복했던 거
+
+# 우리가 원하는 accuracy에 도달하면 더 반복하지 않고 끝내는 방법
+# Callback 사용법
+class myCallback(tf.keras.callbacks.Callback):      # tf.callbacks.Callback에는 각 epoch 뿐 아니라 각 mini batch 등 여러 순간에 호출되는 method를 포함하므로 적절히 오버라이딩 하여 사용하면 될듯
+    def on_epoch_end(self, epoch, logs={}):         # epoch 끝날때 마다 반복해서 불리는 method overriding 하는 듯 -- 실제로 불렀을 땐 epoch 끝나가 조금 전에 불리는 듯
+        if(logs.get('accuracy') >= 0.6):
+            print("\nReached 60% accuracy so cancelling training!")
+            self.model.stop_training = True
+
+callbacks = myCallback()
+
+mnist = tf.keras.datasets.fashion_mnist
 (training_images, training_labels), (test_images, test_labels) = mnist.load_data()
 
-training_images = training_images / 255.0
-test_images = test_images / 255.0
+training_images = training_images/255.0
+test_images = test_images/255.0
 
-model = tf.keras.Sequential([
+model = tf.keras.models.Sequential([
     tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(1024, activation=tf.nn.relu),
+    tf.keras.layers.Dense(512, activation=tf.nn.relu),
     tf.keras.layers.Dense(10, activation=tf.nn.softmax)
 ])
 
-model.compile(optimizer=tf.optimizers.Adam(), loss='sparse_categorical_crossentropy')
-
-model.fit(training_images, training_labels, epochs=5)
-
-model.evaluate(test_images, test_labels)
-
-classifications = model.predict(test_images)
-
-print('model이 예측한 값')
-print(np.argmax(classifications[0]))
-print('실제값')
-print(test_labels[0])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])   # metrics 내에 어떤 평가지표로 평가할지를 넣어줌 이는 epoch 마다 trainig process를 모니터링 할때 필요
+model.fit(training_images, training_labels, epochs=5, callbacks=[callbacks])                    # callbacks=[] 안에는 자신의 custom callback 객체를 넣어줌
