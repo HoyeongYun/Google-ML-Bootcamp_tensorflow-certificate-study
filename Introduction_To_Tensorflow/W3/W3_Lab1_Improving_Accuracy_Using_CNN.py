@@ -88,6 +88,7 @@ plt.imshow(test_images[THIRD_IMAGE])
 
 f, axarr = plt.subplots(3, 4)
 
+# 4까지만 한 이유는 feature extraction layer가 4개이기 때문
 for x in range(0, 4):
     f1 = activation_model.predict(test_images[FIRST_IMAGE].reshape(1, 28, 28, 1))[x]      # predict에는 총 batch input (m, h, w, c)를 넘겨야하므로 reshape
     axarr[0, x].imshow(f1[0, :, :, CONVOLUTION_NUMBER], cmap='inferno')                   # [x] -> (x+1)번째 layer에 통과시킨 결과
