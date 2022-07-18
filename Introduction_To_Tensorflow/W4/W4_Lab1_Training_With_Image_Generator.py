@@ -9,7 +9,6 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from google.colab import files
 from keras.preprocessing import image
 
-
 # wget 모듈을 이용해서 파일 다운로드하는 방법
 url = 'https://storage.googleapis.com/tensorflow-1-public/course2/week3/horse-or-human.zip'
 wget.download(url)
@@ -110,3 +109,4 @@ for fn in uploaded.keys():
     else:
         print(fn + ' is a horse')
 
+## 뒤에 마저하기
