@@ -100,7 +100,7 @@ for fn in uploaded.keys():
     x = image.img_to_array(img)         # (h, w, c)
     x = np.expand_dims(x, axis=0)       # (1, h, w, c) 이렇게 바꿔줌
 
-    images = np.vstack([x])
+    images = np.vstack([x])                             # np.vstack(a), np.vstack([a]) 결과는 같음
     classes = model.predict(images, batch_size=10)      # predict할때 batch_size가 왜 필요하지?
     print(classes[0])       # human으로 예측할 확률
 
