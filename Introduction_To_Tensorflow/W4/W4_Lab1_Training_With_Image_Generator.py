@@ -93,7 +93,7 @@ history = model.fit(
 # 내가 올린 이미지로 예측하기
 uploaded = files.upload()         # 이 google api를 호출하면 내가 local에서 업로드할 이미지를 선택해주고 uploaded 에는 {업로드한 이미지 이름 : 실제 이미지파일} 이렇게 담긴다
 
-for fn in uploaded.keys():
+for fn in uploaded.keys():        # 사용자가 이미지를 여러장 선택했을 때 모든 사진에 대해서 처리해줌
 
     path = './' + fn             # 내가 local에서 선택한 이미지를 올릴 곳
     img = image.load_img(path, target_size=(300, 300))
