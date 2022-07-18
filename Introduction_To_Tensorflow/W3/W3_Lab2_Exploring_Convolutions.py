@@ -21,7 +21,7 @@ filter = [[0, 1, 0], [1, -4, 1], [0, 1, 0]]
 # filter = [ [-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]        # 수직 강조
 
 weight = 1
-
+d
 for x in range(1, size_x - 1):
     for y in range(1, size_y - 1):
         convolution = 0.0
