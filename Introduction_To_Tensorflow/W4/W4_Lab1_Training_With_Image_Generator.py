@@ -5,9 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
 from google.colab import files
 from keras.preprocessing import image
+import random
 
 # wget 모듈을 이용해서 파일 다운로드하는 방법
 url = 'https://storage.googleapis.com/tensorflow-1-public/course2/week3/horse-or-human.zip'
@@ -109,4 +110,44 @@ for fn in uploaded.keys():        # 사용자가 이미지를 여러장 선택�
     else:
         print(fn + ' is a horse')
 
-## 뒤에 마저하기
+# Visualizing
+successive_outputs = [layer.output for layer in model.layers[1:]]
+visualization_model = tf.keras.models.Model(inputs=model.input, outputs=successive_outputs)
+
+horse_img_files = [os.path.join(train_horse_dir, f) for f in train_horse_names]
+human_img_files = [os.path.join(train_human_dir, f) for f in train_human_names]
+img_path = random.choice(horse_img_files + human_img_files)                     # random 모듈 random.choice(list) 임의로 하나 선택해줌
+
+img = load_img(img_path, target_size=(300, 300))
+x = img_to_array(img)
+x = np.expand_dims(x, axis=0)   # x = x.reshape((1, ) + x.shape)
+
+x /= 255
+
+successive_feature_maps = visualization_model.predict(x)        # [두번째 layer에 대한 output, 세번째 layer에 대한 output, ...]
+
+layer_names = [layer.name for layer in model.layers[1:]]
+
+for layer_name, feature_map in zip(layer_names, successive_feature_maps):
+
+    if len(feature_map.shpae) == 4:     # output이 img인 것들
+
+        n_features = feature_map.shape[-1]  # intermediate output의 채널 수(feature 수)
+        size = feature_map.shape[1] # (1, size, size, n_features)
+        display_grid = np.zeros((size, size * n_features))
+
+        for i in range(n_features):
+            x = feature_map[0, :, :, i]
+            x -= x.mean()
+            x /= x.std()
+            x *= 64
+            x += 128
+            x = np.clip(x, 0, 255).astype('uint8')
+
+            display_grid[:, i * size : (i + 1) * size] = x
+
+        scale = 20. / n_features
+        plt.figure(figsize=(scale * n_features, scale))
+        plt.title(layer_name)
+        plt.grid(False)
+        plt.imshow(display_grid, aspect='auto', cmap='viridis')
