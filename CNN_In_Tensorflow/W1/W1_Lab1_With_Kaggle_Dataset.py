@@ -4,8 +4,10 @@ import zipfile
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.image as imimg
+import matplotlib.image as mpimg
 import tensorflow as tf
+from tensorflow.keras.optimizers import RMSprop
+
 
 # url = 'https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip'
 # wget.download(url)
@@ -74,7 +76,56 @@ for i, img_path in enumerate(next_cat_pix + next_dog_pix):
 
 plt.show()
 
+model = tf.keras.models.Sequential([
 
+    tf.keras.layers.Conv2D(16, (3,3), activation='relu', input_shape=(150, 150, 3)),
+    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Conv2D(32, (3,3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(2,2),
 
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(512, activation='relu'),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+
+model.summary()
+
+model.compile(optimizer=RMSprop(learning_rate=0.001),
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# All images will be rescaled by 1./255.
+train_datagen = ImageDataGenerator( rescale = 1.0/255. )
+test_datagen  = ImageDataGenerator( rescale = 1.0/255. )
+
+# --------------------
+# Flow training images in batches of 20 using train_datagen generator
+# --------------------
+train_generator = train_datagen.flow_from_directory(train_dir,
+                                                    batch_size=20,
+                                                    class_mode='binary',
+                                                    target_size=(150, 150))
+# --------------------
+# Flow validation images in batches of 20 using test_datagen generator
+# --------------------
+validation_generator =  test_datagen.flow_from_directory(validation_dir,
+                                                         batch_size=20,
+                                                         class_mode  = 'binary',
+                                                         target_size = (150, 150))
+
+history = model.fit(
+            train_generator,
+            steps_per_epoch=100,
+            epochs=15,
+            validation_data=validation_generator,
+            validation_steps=50,
+            verbose=2
+            )
+
+#뒤에 남음
 
 
