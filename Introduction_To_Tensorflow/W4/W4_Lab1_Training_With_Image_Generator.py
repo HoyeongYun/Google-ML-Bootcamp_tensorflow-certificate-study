@@ -12,7 +12,7 @@ import random
 
 # wget 모듈을 이용해서 파일 다운로드하는 방법
 url = 'https://storage.googleapis.com/tensorflow-1-public/course2/week3/horse-or-human.zip'
-wget.download(url)
+wget.download(url)      # 현재 디렉토리에 다운받아짐
 
 # zip 파일 해제 하는 방법
 local_zip = './horse-or-human.zip'
