@@ -7,16 +7,18 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import tensorflow as tf
 from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
+import random
 
 
-# url = 'https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip'
-# wget.download(url)
+url = 'https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip'
+wget.download(url)
 
-# local_zip = './cats_and_dogs_filtered.zip'
-# zip_ref = zipfile.ZipFile(local_zip, 'r')
-# zip_ref.extractall()
-#
-# zip_ref.close()
+local_zip = './cats_and_dogs_filtered.zip'
+zip_ref = zipfile.ZipFile(local_zip, 'r')
+zip_ref.extractall()
+
+zip_ref.close()
 
 base_dir = './cats_and_dogs_filtered'
 
@@ -96,22 +98,15 @@ model.compile(optimizer=RMSprop(learning_rate=0.001),
               loss='binary_crossentropy',
               metrics=['accuracy'])
 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
-# All images will be rescaled by 1./255.
 train_datagen = ImageDataGenerator( rescale = 1.0/255. )
 test_datagen  = ImageDataGenerator( rescale = 1.0/255. )
 
-# --------------------
-# Flow training images in batches of 20 using train_datagen generator
-# --------------------
 train_generator = train_datagen.flow_from_directory(train_dir,
                                                     batch_size=20,
                                                     class_mode='binary',
                                                     target_size=(150, 150))
-# --------------------
-# Flow validation images in batches of 20 using test_datagen generator
-# --------------------
+
+
 validation_generator =  test_datagen.flow_from_directory(validation_dir,
                                                          batch_size=20,
                                                          class_mode  = 'binary',
@@ -126,6 +121,68 @@ history = model.fit(
             verbose=2
             )
 
-#뒤에 남음
 
+# from google.colab import files
+# from keras.preprocessing import image
+#
+# uploaded = files.upload()
+#
+# for fn in uploaded.keys():
+#
+#     path = './' + fn
+#     img = image.load_img(path, target_size=(150, 150))
+#
+#     x = image.img_to_array(img)
+#     x /= 255.0
+#     x = np.expand_dims(x, axis=0)
+#     images = np.vstack([x])
+#
+#     classes = model.predict(images, batch_size=10)
+#
+#     print(classes[0])
+#
+#     if classes[0] > 0.5:
+#         print(fn + 'is a dog')
+#     else:
+#         print(fn + 'is a cat')
+
+succesive_outputs = [layer.output for layer in model.layers]
+visualization_model = tf.keras.models.Model(inputs=model.input, outputs=succesive_outputs)
+
+cat_img_files = [os.path.join(train_cats_dir, f) for f in train_cat_fnames]
+dog_img_files = [os.path.join(train_dogs_dir, f) for f in train_dog_fnames]
+img_path = random.choice(cat_img_files + dog_img_files)
+img = load_img(img_path, target_size=(150, 150))
+x = img_to_array(img)
+x = x.reshape((1,) + x.shape)
+
+x /= 255.0
+
+succesive_feature_map = visualization_model.predict(x)          #[첫번째 까지만 통과한 결과, 두번째 까지만 통과한 결과]
+
+layer_names = [layer.name for layer in model.layers]
+
+for layer_name, feature_map in zip(layer_names, succesive_feature_map):
+    # feature_map  (1, size, size, channels(features))
+    if len(feature_map.shape) == 4:
+
+        n_features = feature_map.shape[-1]
+        size = feature_map.shape[1]
+
+        display_grid = np.zeros((size, size * n_features))
+
+        for i in range(n_features):
+            x = feature_map[0, :, :, i]
+            x -= x.mean()
+            x /= x.std()
+            x *= 64
+            x += 128
+            x = np.clip(x, 0, 255).astype('uint8')
+            display_grid[:, i * size : (i + 1) * size] = x
+
+        scale = 20. / n_features
+        plt.figure(figsize=(scale * n_features, scale))
+        plt.title(layer_name)
+        plt.grid(False)
+        plt.imshow(display_grid, aspect='auto', cmp='viridis')
 
