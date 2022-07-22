@@ -9,7 +9,7 @@ corpus = [
     'Do you think my dog is amazing?'
 ]
 
-tokenizer = Tokenizer(num_words=100, oov_token='<OOV>')
+tokenizer = Tokenizer(num_words=100, oov_token='<OOV>')         # OOV => Out of vocabulary
 tokenizer.fit_on_texts(corpus)
 word_dic = tokenizer.word_index
 
@@ -22,7 +22,7 @@ print('Sequences = ', sequences)
 
 # Padding
 
-padded = pad_sequences(sequences, maxlen=5) # -> maxlen 이 가장 긴 문장보다 작은경우에는 default로 맨뒤부터 maxlen개수 만큼이 보존된다 (앞이 짤림)
+padded = pad_sequences(sequences, maxlen=5, padding='pre', truncating='post') # -> maxlen 이 가장 긴 문장보다 작은경우에는 default로 맨뒤부터 maxlen개수 만큼이 보존된다 (앞이 짤림)
 print('\nPadded sequences : ')
 print(padded)
 # print(type(padded))   -> np.ndarray
