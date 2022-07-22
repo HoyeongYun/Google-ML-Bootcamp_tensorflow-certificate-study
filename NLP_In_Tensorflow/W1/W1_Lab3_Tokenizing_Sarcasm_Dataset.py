@@ -4,8 +4,6 @@ import os
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-
-
 if not os.path.exists('./sarcasm.json'):
     url = 'https://storage.googleapis.com/tensorflow-1-public/course3/sarcasm.json'
     wget.download(url)
