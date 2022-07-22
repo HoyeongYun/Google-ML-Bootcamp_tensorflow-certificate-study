@@ -20,9 +20,11 @@ print('Sequences = ', sequences)
 # print(type(sequences))  -> list
 # print(sequences.shape)
 
-# Padding
 
-padded = pad_sequences(sequences, maxlen=5, padding='pre', truncating='post') # -> maxlen 이 가장 긴 문장보다 작은경우에는 default로 맨뒤부터 maxlen개수 만큼이 보존된다 (앞이 짤림)
+# Padding이 필요한 이유 -> model의 input으로 줄때 shape를 맞춰야하기 때문
+padded = pad_sequences(sequences, maxlen=5, padding='pre', truncating='post')
+# -> maxlen 이 가장 긴 문장보다 작은경우에는 default로 맨뒤부터 maxlen개수 만큼이 보존된다 (앞이 짤림)
+# default 는 pre
 print('\nPadded sequences : ')
 print(padded)
 # print(type(padded))   -> np.ndarray
@@ -36,6 +38,7 @@ test_corpus = [
 # 당연히 이전 문장에 fit 시켜놨던 tokenizer 사용해야됨
 test_seq = tokenizer.texts_to_sequences(test_corpus)
 
+# Tokenizer(oov_token) oov token 지정안하면, 처음 보는단어(word dic에 없는단어)가 나왔을 때, sequence에 아무것도 안넣어준다
 print('\nWord dic : ', word_dic)
 print('\nTest Sequence : ', test_seq)
 
