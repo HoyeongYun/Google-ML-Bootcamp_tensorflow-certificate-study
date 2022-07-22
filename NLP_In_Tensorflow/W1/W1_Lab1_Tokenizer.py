@@ -20,3 +20,13 @@ tokenizer = Tokenizer(num_words=100)
 tokenizer.fit_on_texts(sentences)
 word_index = tokenizer.word_index
 print(word_index)
+
+sentences = [
+    'i, a b ,ccd efa',
+    'ge dfe',
+    'i i i i a a b b ccd ccd'
+]
+
+tokenizer = Tokenizer(num_words=3)
+tokenizer.fit_on_texts(sentences)
+print(tokenizer.word_index)
