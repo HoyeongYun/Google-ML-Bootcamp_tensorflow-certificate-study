@@ -80,7 +80,6 @@ out_m = io.open('meta.tsv', 'w', encoding='utf-8')
 print(reverse_word_index[0])
 print(reverse_word_index[1])
 
-
 for word_num in range(1, vocab_size):
 
     word_name = reverse_word_index[word_num]
