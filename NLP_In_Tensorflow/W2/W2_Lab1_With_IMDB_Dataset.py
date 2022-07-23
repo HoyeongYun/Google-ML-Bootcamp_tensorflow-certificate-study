@@ -10,7 +10,7 @@ imdb, info = tfds.load('imdb_reviews', with_info=True, as_supervised=True)
 print('info : ', info)
 print(f'imdb : {imdb}\n')
 
-for example in imdb['train'].take(2):
+for example in imdb['train'].take(2):       # iterator가 아님에도 Dataset 자체를 for in 에 넘길수 있네
     print(type(example))
     print(example)
 
