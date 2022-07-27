@@ -24,7 +24,7 @@ def plot_series(x, y, format='-', start=0, end=None, title=None, xlabel=None, yl
         plt.legend(legend)
 
 # sunspot data download
-if not os.exist('./Sunspots.csv'):
+if not os.path.exists('./Sunspots.csv'):
     url = 'https://storage.googleapis.com/tensorflow-1-public/course4/Sunspots.csv'
     wget.download(url)
 
@@ -73,3 +73,26 @@ shuffle_buffer_size = 1000
 train_set = windowed_dataset(x_train, window_size, batch_size, shuffle_buffer_size)
 
 # build Model
+model = tf.keras.Sequential([
+    tf.keras.layers.Conv1D(filters=64, kernel_size=3, strides=1, activation='relu', padding='causal', input_shape=[window_size, 1]),    # conv layer는 적어도 3차원 이상 input 필요, 'causal' 이면 time step size 유지
+    tf.keras.layers.LSTM(64, return_sequences=True),
+    tf.keras.layers.LSTM(64),
+    tf.keras.layers.Dense(30, activation='relu'),
+    tf.keras.layers.Dense(10, activation='relu'),
+    tf.keras.layers.Dense(1),
+    tf.keras.layers.Lambda(lambda x: x * 400)
+])
+
+model.summary()
+
+# Tune the Learning Rate, lr을 늘려가면서 loss를 체크해보고 어떤 lr 일때가 최적에 가까울 지 rough하게 찾아본다고 생각
+init_weights = model.get_weights()
+
+lr_schedule = tf.keras.callbacks.LearningRateScheduler(lambda epoch: 1e-8 * (10 ** (epoch/20)))
+
+optimizer = tf.keras.optimizers.SGD(momentum=0.9)
+
+model.compile(loss=tf.keras.losses.Huber(), optimizer=optimizer)
+
+history = model.fit(train_set, epochs=100, callbacks=[lr_schedule])
+
