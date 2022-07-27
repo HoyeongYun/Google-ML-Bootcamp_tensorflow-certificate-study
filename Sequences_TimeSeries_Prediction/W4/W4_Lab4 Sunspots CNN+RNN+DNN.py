@@ -26,4 +26,4 @@ wget.download(url)
 time_step = []
 sunspots = []
 
-# with open('')
+with open('./Sunspots.csv', 'r') as csvfile:
