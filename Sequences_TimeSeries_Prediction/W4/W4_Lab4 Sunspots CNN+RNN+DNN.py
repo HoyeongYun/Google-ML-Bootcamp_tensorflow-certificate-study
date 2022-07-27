@@ -138,4 +138,42 @@ loss_zoom = loss[zoom_split:]
 plot_series(x=epochs_zoom, y=(mae_zoom, loss_zoom), title='MAE and Loss', xlabel='MAE', ylabel='Loss', legend=['MAE', 'Loss'])
 
 # Model Prediction
-def model_forecast(model,)
+def model_forecast(model, series, window_size, batch_size):
+
+    dataset = tf.data.Dataset.from_tensor_slices(series)
+    dataset = dataset.window(window_size, shift=1, drop_remainder=True)
+    dataset = dataset.flat_map(lambda window: window.batch(window_size))
+    dataset = dataset.batch(batch_size).prefetch(1)
+    forecast = model.predict(dataset)
+
+    return forecast
+
+forecast_series = series[split_time - window_size : -1]
+
+forecast = model_forecast(model, forecast_series, window_size, batch_size)
+
+results = forecast.squeeze()
+
+plot_series(time_valid, (forecast, results))
+
+print(tf.keras.metrics.mean_absolute_error(forecast, results).numpy())
+
+
+# Plus Alpha - learning rate decay implementation
+optimizer = tf.keras.optimizers.SGD(learning_rate=1e-7, momentum=0.9)
+
+model.compile(loss=tf.keras.losses.Huber(), optimizer=optimizer, metrics=['mae'])
+
+history = model.fit(train_set, epochs=10)
+
+### vs ###
+
+initial_learning_rate = 1e-7
+
+lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate, decay_steps=400, decay_rate=0.96, staircase=True)   # tf.keras.callbacks.LearningRateScheduler 는 callback, 다름
+
+optimizer = tf.keras.optimizers.SGD(learning_rate=lr_schedule, momentum=0.9)        # 여기가 다르다
+
+model.compile(loss=tf.keras.losses.Huber(), optimizer=optimizer, metrics=['mae'])
+
+history = model.fit(train_set, epochs=40)
