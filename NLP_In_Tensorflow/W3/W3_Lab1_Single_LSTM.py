@@ -22,7 +22,7 @@ lstm_dim = 64
 dense_dim = 64
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(tokenizer.vocab_size, embedding_dim),
+    tf.keras.layers.Embedding(tokenizer.vocab_size, embedding_dim),     # input_length는 padded_batch 이니깐 배치마다 다르기 때문에 지정하지 않음
     tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(lstm_dim)),
     tf.keras.layers.Dense(dense_dim, activation='relu'),
     tf.keras.layers.Dense(1, activation='sigmoid')
