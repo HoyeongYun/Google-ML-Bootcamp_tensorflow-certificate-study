@@ -8,7 +8,7 @@ import os
 # utility functions
 def plot_series(x, y, format="-", start=0, end=None, title=None, xlabel=None, ylabel=None, legend=None):
 
-   plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(10, 6))
 
     if type(y) is tuple:
         for y_curr in y:
