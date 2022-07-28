@@ -58,3 +58,41 @@ def plot_graphs(history, string):
 plot_graphs(history, 'accuracy')
 
 # Generating text
+# 매 순간 가장 높은 확률 따르기
+given_text = 'Laurence went to Dublin'
+
+next_words = 100
+
+for _ in range(next_words):
+
+    token_list = tokenizer.texts_to_sequences([given_text])[0]
+
+    token_list = pad_sequences([token_list], maxlen=max_sequence_len - 1, padding='pre')
+
+    probabilities = model.predict(token_list)
+
+    predicted = np.argmax(probabilities, axis=-1)[0]
+
+    if predicted != 0:
+
+        given_text = given_text + ' ' + tokenizer.index_word[predicted]
+
+# 가장 높은 세가지 중 랜덤 초이스 하기
+
+seed_text = "Laurence went to Dublin"
+
+for _ in range(next_words):
+
+    token_list = tokenizer.texts_to_sequences([seed_text])[0]
+
+    token_list = pad_sequences([token_list], maxlen=max_sequence_len - 1, padding='pre')
+
+    probabilities = model.predict(token_list)
+
+    choice = np.random.choice([1, 2, 3])
+
+    predicted = np.argsort(probabilities)[0][-choice]
+
+    if predicted != 0:
+
+        seed_text += ' ' + tokenizer.index_word(predicted)
