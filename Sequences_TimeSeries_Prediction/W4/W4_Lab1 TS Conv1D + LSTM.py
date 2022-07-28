@@ -81,7 +81,7 @@ train_dataset = windowed_dataset(series_train, window_size, batch_size, shuffle_
 tf.keras.backend.clear_session()
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Conv1D(filters=64, kernel_size=3, strides=1, padding='causal', activation='relu', input_shape=[window_size, 1]),
+    tf.keras.layers.Conv1D(filters=64, kernel_size=3, strides=1, padding='causal', activation='relu', input_shape=[window_size, 1]),        # 알기로는, input_shape에는 내 dataset 의 (첫번째 dimension을 제외한, 즉b atch_size를 제외한)shape을 적어 줘야하는 것인 줄 알았는데
     tf.keras.layers.LSTM(64, return_sequences=True),
     tf.keras.layers.LSTM(64),
     tf.keras.layers.Dense(1),

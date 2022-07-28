@@ -119,7 +119,7 @@ plt.axis([1e-7, 1e-4, 0, 20])
 
 # main_training
 model = tf.keras.models.Sequential([
-  tf.keras.layers.Lambda(lambda x: tf.expand_dims(x, axis=-1), input_shape=[window_size]),
+  tf.keras.layers.Lambda(lambda x: tf.expand_dims(x, axis=-1), input_shape=[window_size]),          # 뒤에나오는 Conv1D에서는 lambda layer가 없어도 자동으로 [windowsize] -> [windowsize, 1]로 해주는데 그건 왜?
   tf.keras.layers.SimpleRNN(40, return_sequences=True),
   tf.keras.layers.SimpleRNN(40),
   tf.keras.layers.Dense(1),
@@ -144,7 +144,9 @@ for time in range(len(forecast_series) - window_size):
 
 results = np.array(forecast).squeeze()
 
-plot_series(time_valid, (x_valid, results))
+plot_series(time_valid, (series_valid, results))
+
+# 뒤 생략
 
 
 
