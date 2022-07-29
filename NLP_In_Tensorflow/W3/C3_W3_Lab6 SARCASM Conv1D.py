@@ -68,3 +68,5 @@ model_conv.compile(loss='binary_crossentropy', optimzier='adam', metrics=['accru
 model_conv.summary()
 
 history_conv = model_conv.fit(training_padded, training_labels, epochs=10, validation_data=(testing_padded, testing_labels))
+
+
