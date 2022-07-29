@@ -53,7 +53,7 @@ testing_sequences = tokenizer.texts_to_sequences(testing_sentences)
 testing_padded = pad_sequences(testing_sequences, maxlen=max_length, truncating=trunc_type)
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),          # word embedding 공부 다시
+    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),          # word embedding    중요) embedding weight = (vocab_size, embedding_dim)
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(6, activation='relu'),
     tf.keras.layers.Dense(1, activation='sigmoid')

@@ -11,13 +11,9 @@ import matplotlib.pyplot as plt
 if not os.path.exists('./sarcasm.json'):
     url = 'https://storage.googleapis.com/tensorflow-1-public/course3/sarcasm.json'
     wget.download(url)
-    print('???')
 
 with open('./sarcasm.json', 'r') as f:
     datastore = json.load(f)
-
-# datastore [{}, {}, {}]
-# print(datastore)
 
 sentences = []
 labels = []
