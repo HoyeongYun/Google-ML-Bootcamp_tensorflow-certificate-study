@@ -1,6 +1,8 @@
 import tensorflow_datasets as tfds
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 dataset, info = tfds.load('imdb_reviews/subwords8k', with_info=True, as_supervised=True)
 
@@ -9,7 +11,7 @@ tokenizer = info.features['text'].encoder
 print(info.features)
 
 BUFFER_SIZE = 10000
-BATCH_SIZE = 256        # 유튜브 영상 보니 명확해짐 https://www.youtube.com/watch?v=c7G5W4Wv72Q
+BATCH_SIZE = 16        # 유튜브 영상 보니 명확해짐 https://www.youtube.com/watch?v=c7G5W4Wv72Q
 
 train_data, test_data = dataset['train'], dataset['test']
 train_dataset = train_data.shuffle(BUFFER_SIZE)     # test data는 shuffle 할 필요가 없다
@@ -36,7 +38,7 @@ NUM_EPOCHS = 10
 
 history = model.fit(train_dataset, validation_data=test_dataset, epochs=NUM_EPOCHS, verbose=1)
 
-def plot_graphs(hitory, string):
+def plot_graphs(history, string):
     plt.plot(history.history[string])
     plt.plot(history.history['val_' + string])
 
